@@ -64,6 +64,8 @@ services:
         limits:
           cpus: '1'
           memory: 1G
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data  # Map the volume to Elasticsearch data directory
 
   kibana: # master pt cautari loguri + indexari
     image: docker.elastic.co/kibana/kibana:7.15.2
@@ -114,6 +116,8 @@ services:
         limits:
           cpus: '0.25'
           memory: 128M
+    volumes:
+      - redis-weather-data:/data  # Map the volume to Redis data directory
 
   event-service-db:
     image: mysql
@@ -138,6 +142,8 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+    volumes:
+      - event-service-db-data:/var/lib/mysql  # MySQL data directory
 
 
   events-service:
@@ -159,6 +165,7 @@ services:
       - CONSUL_CHECK_TIMEOUT=10s
       - CONSUL_HOST=consul-agent
       - CONSUL_PORT=8500
+      - CONSUL_REFRESH_INTERVAL=60s
       - LOGSTASH_AGENT_HOST=logstash-agent
       - LOGSTASH_AGENT_PORT=51515
       - LOGSTASH_ENABLED=True
@@ -167,8 +174,8 @@ services:
     networks:
       siemens:
         ipv4_address: 10.10.10.9
-    ports:
-      - "8084:5000"
+#    ports:
+#      - "8084:5000"
     deploy:
       resources:
         limits:
@@ -194,6 +201,7 @@ services:
       - CONSUL_CHECK_TIMEOUT=10s
       - CONSUL_HOST=consul-agent
       - CONSUL_PORT=8500
+      - CONSUL_REFRESH_INTERVAL=60s
       - LOGSTASH_AGENT_HOST=logstash-agent
       - LOGSTASH_AGENT_PORT=51515
       - LOGSTASH_ENABLED=True
@@ -202,8 +210,8 @@ services:
     networks:
       siemens:
         ipv4_address: 10.10.10.10
-    ports:
-      - "8085:5000"
+#    ports:
+#      - "8085:5000"
     deploy:
       resources:
         limits:
@@ -230,6 +238,7 @@ services:
       - CONSUL_CHECK_TIMEOUT=10s
       - CONSUL_HOST=consul-agent
       - CONSUL_PORT=8500
+      - CONSUL_REFRESH_INTERVAL=60s
       - LOGSTASH_AGENT_HOST=logstash-agent
       - LOGSTASH_AGENT_PORT=51515
       - LOGSTASH_ENABLED=True
@@ -253,6 +262,10 @@ networks:
         - subnet: 10.10.10.0/24
           gateway: 10.10.10.1
 
+volumes:
+  event-service-db-data:
+  redis-weather-data:
+  elasticsearch-data:
 
 #  service-one-db:
 #    image: mysql
